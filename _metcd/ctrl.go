@@ -12,8 +12,8 @@ import (
 	"github.com/coreos/etcd/raft/raftpb"
 	"golang.org/x/net/context"
 
-	"github.com/weaveworks/mesh"
-	"github.com/weaveworks/mesh/meshconn"
+	"github.com/csghh/mesh"
+	"github.com/csghh/mesh/meshconn"
 )
 
 // +-------------+   +-----------------+               +-------------------------+   +-------+

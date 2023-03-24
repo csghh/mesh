@@ -9,7 +9,7 @@ The code remains for historical purposes.
 
 # Caveats
 
-- We only partially implement the etcd V3 API. See [etcd_store.go](https://github.com/weaveworks/mesh/blob/master/metcd/etcd_store.go) for details.
+- We only partially implement the etcd V3 API. See [etcd_store.go](https://github.com/csghh/mesh/blob/master/metcd/etcd_store.go) for details.
 - Snapshotting and compaction are not yet implemented.
 
 ## Usage
@@ -27,5 +27,5 @@ server := metcd.NewDefaultServer(minPeerCount, logger)
 server.Serve(ln)
 ```
 
-To have finer-grained control over the mesh, use [metcd.NewServer](http://godoc.org/github.com/weaveworks/mesh/metcd#NewServer).
-See [metcdsrv](https://github.com/weaveworks/mesh/tree/master/metcd/metcdsrv/main.go) for a complete example.
+To have finer-grained control over the mesh, use [metcd.NewServer](http://godoc.org/github.com/csghh/mesh/metcd#NewServer).
+See [metcdsrv](https://github.com/csghh/mesh/tree/master/metcd/metcdsrv/main.go) for a complete example.

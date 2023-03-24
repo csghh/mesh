@@ -39,6 +39,14 @@ type Config struct {
 	PeerDiscovery      bool
 	TrustedSubnets     []*net.IPNet
 	GossipInterval     *time.Duration
+	// SingleHopTopolgy is used to indicate a topology of nodes participating
+	// in the mesh where each node is fully connected to other nodes
+	SingleHopTopolgy bool
+}
+
+// GossiperMaker is an interface to create a Gossiper instance
+type GossiperMaker interface {
+	MakeGossiper(channelName string, router *Router) Gossiper
 }
 
 // Router manages communication between this peer and the rest of the mesh.
@@ -50,6 +58,7 @@ type Router struct {
 	Peers           *Peers
 	Routes          *routes
 	ConnectionMaker *connectionMaker
+	GossiperMaker   GossiperMaker
 	gossipLock      sync.RWMutex
 	gossipChannels  gossipChannels
 	topologyGossip  Gossip
@@ -144,6 +153,13 @@ func (router *Router) NewGossip(channelName string, g Gossiper) (Gossip, error) 
 	return channel, nil
 }
 
+// GetGossip returns a GossipChannel from the router, or nil if the channel has not been seen/created
+func (router *Router) GetGossip(channelName string) Gossip {
+	router.gossipLock.Lock()
+	defer router.gossipLock.Unlock()
+	return router.gossipChannels[channelName]
+}
+
 func (router *Router) gossipChannel(channelName string) *gossipChannel {
 	router.gossipLock.RLock()
 	channel, found := router.gossipChannels[channelName]
@@ -156,7 +172,17 @@ func (router *Router) gossipChannel(channelName string) *gossipChannel {
 	if channel, found = router.gossipChannels[channelName]; found {
 		return channel
 	}
-	channel = newGossipChannel(channelName, router.Ourself, router.Routes, &surrogateGossiper{router: router}, router.logger)
+	//channel = newGossipChannel(channelName, router.Ourself, router.Routes, &surrogateGossiper{router: router}, router.logger)
+	// unknown channel - do we have a GossiperMaker?
+	var gossiper Gossiper
+	if router.GossiperMaker != nil {
+		// use the GossiperMaker to make the surrogate channel
+		gossiper = router.GossiperMaker.MakeGossiper(channelName, router)
+	} else {
+		// default surrogate channel
+		gossiper = &surrogateGossiper{router: router}
+	}
+	channel = newGossipChannel(channelName, router.Ourself, router.Routes, gossiper, router.logger)
 	channel.logf("created surrogate channel")
 	router.gossipChannels[channelName] = channel
 	return channel

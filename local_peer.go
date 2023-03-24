@@ -218,8 +218,10 @@ func (peer *localPeer) handleAddConnection(conn ourConnection, isRestartedPeer b
 		peer.router.sendAllGossipDown(conn)
 	}
 	peer.router.Routes.recalculate()
-	peer.broadcastPeerUpdate(conn.Remote())
-
+	//peer.broadcastPeerUpdate(conn.Remote())
+	if !peer.isFullyConnectedTopology() {
+		peer.broadcastPeerUpdate(conn.Remote())
+	}
 	return nil
 }
 
@@ -235,7 +237,10 @@ func (peer *localPeer) handleConnectionEstablished(conn ourConnection) {
 	conn.logf("connection fully established")
 
 	peer.router.Routes.recalculate()
-	peer.broadcastPeerUpdate()
+	//peer.broadcastPeerUpdate()
+	if !peer.isFullyConnectedTopology() {
+		peer.broadcastPeerUpdate(conn.Remote())
+	}
 }
 
 func (peer *localPeer) handleDeleteConnection(conn ourConnection) {
@@ -255,7 +260,10 @@ func (peer *localPeer) handleDeleteConnection(conn ourConnection) {
 	// update with unreachable peers (can cause looping)
 	peer.router.Peers.GarbageCollect()
 	peer.router.Routes.recalculate()
-	peer.broadcastPeerUpdate()
+	//peer.broadcastPeerUpdate()
+	if !peer.isFullyConnectedTopology() {
+		peer.broadcastPeerUpdate(conn.Remote())
+	}
 }
 
 // helpers
@@ -325,6 +333,13 @@ func (peer *localPeer) setVersionBeyond(version uint64) bool {
 	if version >= peer.Version {
 		peer.Version = version + 1
 		return true
+	}
+	return false
+}
+
+func (peer *localPeer) isFullyConnectedTopology() bool {
+	if peer.router != nil {
+		return peer.router.Config.SingleHopTopolgy
 	}
 	return false
 }

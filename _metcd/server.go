@@ -10,8 +10,8 @@ import (
 	"github.com/coreos/etcd/raft/raftpb"
 	"google.golang.org/grpc"
 
-	"github.com/weaveworks/mesh"
-	"github.com/weaveworks/mesh/meshconn"
+	"github.com/csghh/mesh"
+	"github.com/csghh/mesh/meshconn"
 )
 
 // Server collects the etcd V3 server interfaces that we implement.

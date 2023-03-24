@@ -5,7 +5,7 @@ import (
 
 	"github.com/coreos/etcd/raft/raftpb"
 
-	"github.com/weaveworks/mesh"
+	"github.com/csghh/mesh"
 )
 
 // membership regularly polls the mesh.Router for peers in the mesh.

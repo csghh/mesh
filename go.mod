@@ -1,4 +1,4 @@
-module github.com/weaveworks/mesh
+module github.com/csghh/mesh
 
 go 1.12
 

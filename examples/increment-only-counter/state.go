@@ -6,7 +6,7 @@ import (
 
 	"encoding/gob"
 
-	"github.com/weaveworks/mesh"
+	"github.com/csghh/mesh"
 )
 
 // state is an implementation of a G-counter.

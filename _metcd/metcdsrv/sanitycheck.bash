@@ -10,7 +10,7 @@ set -o pipefail
 trap "pkill -P $$" SIGINT SIGTERM EXIT
 
 echo Installing metcdsrv
-go install github.com/weaveworks/mesh/metcd/metcdsrv
+go install github.com/csghh/mesh/metcd/metcdsrv
 
 echo Booting cluster
 # Remove output redirection to debug

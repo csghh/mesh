@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"encoding/gob"
 
-	"github.com/weaveworks/mesh"
+	"github.com/csghh/mesh"
 )
 
 // Peer encapsulates state and implements mesh.Gossiper.

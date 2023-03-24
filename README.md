@@ -1,4 +1,4 @@
-# mesh [![GoDoc](https://godoc.org/github.com/weaveworks/mesh?status.svg)](https://godoc.org/github.com/weaveworks/mesh) [![Circle CI](https://circleci.com/gh/weaveworks/mesh.svg?style=svg)](https://circleci.com/gh/weaveworks/mesh)
+# mesh [![GoDoc](https://godoc.org/github.com/csghh/mesh?status.svg)](https://godoc.org/github.com/csghh/mesh) [![Circle CI](https://circleci.com/gh/weaveworks/mesh.svg?style=svg)](https://circleci.com/gh/weaveworks/mesh)
 
 Mesh is a tool for building distributed applications.
 
@@ -18,7 +18,7 @@ It scales to on the order of 100 peers, and has no dependencies.
 ## Using
 
 Mesh is currently distributed as a Go package.
-See [the API documentation](https://godoc.org/github.com/weaveworks/mesh).
+See [the API documentation](https://godoc.org/github.com/csghh/mesh).
 
 We plan to offer Mesh as a standalone service + an easy-to-use API.
 We will support multiple deployment scenarios, including
@@ -31,7 +31,7 @@ We will support multiple deployment scenarios, including
 
 Mesh builds with the standard Go tooling. You will need to put the
 repository in Go's expected directory structure; i.e.,
-`$GOPATH/src/github.com/weaveworks/mesh`.
+`$GOPATH/src/github.com/csghh/mesh`.
 
 ### Building
 
@@ -83,6 +83,6 @@ If you have any questions about, feedback for or problems with `mesh`:
 
 - Invite yourself to the <a href="https://slack.weave.works/" target="_blank">Weave Users Slack</a>.
 - Ask a question on the [#general](https://weave-community.slack.com/messages/general/) slack channel.
-- [File an issue](https://github.com/weaveworks/mesh/issues/new).
+- [File an issue](https://github.com/csghh/mesh/issues/new).
 
 Your feedback is always welcome!

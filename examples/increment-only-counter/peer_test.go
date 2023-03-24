@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/weaveworks/mesh"
+	"github.com/csghh/mesh"
 )
 
 func TestPeerOnGossip(t *testing.T) {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net"
+	"strconv"
 	"time"
 	"unicode"
 )
@@ -93,7 +94,8 @@ func (cm *connectionMaker) InitiateConnections(peers []string, replace bool) []e
 		}
 		if host == "" || !isAlnum(port) {
 			errors = append(errors, fmt.Errorf("invalid peer name %q, should be host[:port]", peer))
-		} else if addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%s", host, port)); err != nil {
+			//} else if addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%s", host, port)); err != nil {
+		} else if addr, err := net.ResolveTCPAddr("tcp", net.JoinHostPort(host, port)); err != nil {
 			errors = append(errors, err)
 		} else {
 			addrs[peer] = addr
@@ -195,6 +197,11 @@ func (cm *connectionMaker) connectionTerminated(conn Connection, err error) {
 		}
 		delete(cm.connections, conn)
 		if conn.isOutbound() {
+			if conn.Remote() != nil {
+				if _, ok := cm.ourself.Peer.connections[conn.Remote().Name]; ok {
+					return true
+				}
+			}
 			target := cm.targets[conn.remoteTCPAddress()]
 			target.state = targetWaiting
 			target.lastError = err
@@ -220,8 +227,39 @@ func (cm *connectionMaker) refresh() {
 }
 
 func (cm *connectionMaker) queryLoop(actionChan <-chan connectionMakerAction) {
-	timer := time.NewTimer(maxDuration)
-	run := func() { timer.Reset(cm.checkStateAndAttemptConnections()) }
+	//timer := time.NewTimer(maxDuration)
+	//run := func() { timer.Reset(cm.checkStateAndAttemptConnections()) }
+	currentDuration := maxDuration
+	lastRun := time.Time{}
+	timer := time.NewTimer(currentDuration)
+
+	resetTimer := func(d time.Duration) {
+		if !timer.Stop() {
+			select {
+			case <-timer.C:
+			default:
+			}
+		}
+
+		currentDuration = d
+		timer.Reset(currentDuration)
+	}
+
+	run := func() {
+		now := time.Now()
+
+		// If run() was called too recently, we want to ensure that the duration
+		// is no longer than initialInterval
+		if now.Sub(lastRun) < initialInterval {
+			if currentDuration > initialInterval {
+				resetTimer(initialInterval)
+			}
+		} else {
+			// otherwise this means we hit the timer
+			resetTimer(cm.checkStateAndAttemptConnections())
+			lastRun = now
+		}
+	}
 	for {
 		select {
 		case action := <-actionChan:
@@ -331,7 +369,8 @@ func (cm *connectionMaker) addPeerTargets(ourConnectedPeers peerNameSet, addTarg
 				// ephemeral) remote port of an inbound connection
 				// that some peer has. Let's try to connect on the
 				// weave port instead.
-				addTarget(fmt.Sprintf("%s:%d", ip, cm.port))
+				//addTarget(fmt.Sprintf("%s:%d", ip, cm.port))
+				addTarget(net.JoinHostPort(ip, strconv.Itoa(cm.port)))
 			}
 		}
 	})

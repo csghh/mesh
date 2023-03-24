@@ -263,7 +263,12 @@ func (r *routes) calculate() {
 // to exchange knowledge of MAC addresses, nor any constraints on
 // the routes that we construct.
 func (r *routes) calculateUnicast(establishedAndSymmetric bool) unicastRoutes {
-	_, unicast := r.ourself.routes(nil, establishedAndSymmetric)
+	//_, unicast := r.ourself.routes(nil, establishedAndSymmetric)
+	singleHopTopology := false
+	if r.ourself.router != nil {
+		singleHopTopology = r.ourself.router.Config.SingleHopTopolgy
+	}
+	_, unicast := r.ourself.routes(nil, establishedAndSymmetric, singleHopTopology)
 	return unicast
 }
 
@@ -279,11 +284,15 @@ func (r *routes) calculateUnicast(establishedAndSymmetric bool) unicastRoutes {
 // particular:
 //
 // ForAll X,Y,Z in Peers.
-//     X.Routes(Y) <= X.Routes(Z) \/
-//     X.Routes(Z) <= X.Routes(Y)
+//
+//	X.Routes(Y) <= X.Routes(Z) \/
+//	X.Routes(Z) <= X.Routes(Y)
+//
 // ForAll X,Y,Z in Peers.
-//     Y =/= Z /\ X.Routes(Y) <= X.Routes(Z) =>
-//     X.Routes(Y) u [P | Y.HasSymmetricConnectionTo(P)] <= X.Routes(Z)
+//
+//	Y =/= Z /\ X.Routes(Y) <= X.Routes(Z) =>
+//	X.Routes(Y) u [P | Y.HasSymmetricConnectionTo(P)] <= X.Routes(Z)
+//
 // where <= is the subset relationship on keys of the returned map.
 func (r *routes) calculateBroadcast(name PeerName, establishedAndSymmetric bool) []PeerName {
 	hops := []PeerName{}
@@ -291,7 +300,12 @@ func (r *routes) calculateBroadcast(name PeerName, establishedAndSymmetric bool)
 	if !found {
 		return hops
 	}
-	if found, reached := peer.routes(r.ourself.Peer, establishedAndSymmetric); found {
+	//if found, reached := peer.routes(r.ourself.Peer, establishedAndSymmetric); found {
+	singleHopTopology := false
+	if r.ourself.router != nil {
+		singleHopTopology = r.ourself.router.Config.SingleHopTopolgy
+	}
+	if found, reached := peer.routes(r.ourself.Peer, establishedAndSymmetric, singleHopTopology); found {
 		r.ourself.forEachConnectedPeer(establishedAndSymmetric, reached,
 			func(remotePeer *Peer) { hops = append(hops, remotePeer.Name) })
 	}
